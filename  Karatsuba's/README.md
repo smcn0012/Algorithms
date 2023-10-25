@@ -2,7 +2,7 @@
 Karatsuba's algorithm is for fast integer multiplication for integers with the same bit length.  
 
 ## Complexity
-Time complexity is O()
+Time complexity is O(d^(log2(3))) where d is the number of decimal digits in the numbers
 
 ## How it Works
 The basic idea of the algorithm is a divide and conquor approach where you split one multiplication
