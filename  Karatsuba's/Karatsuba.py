@@ -1,4 +1,5 @@
 '''
+Implementation by: Spencer McNamara
 Description:
 Karatsuba's algorithm is for fast integer multiplication for integers with the same bit length.  
 The basic idea of the algorithm is a divide and conquor approach where you split one multiplication
@@ -7,7 +8,6 @@ down into three smaller multiplications.  This is done using the following equat
 Where the numbers are both 2D-bit numbers and they are split into two D-bit numbers V and U where V
 is the first D bits of a number and U is the last D bits of the number.
 The recursion stops at the word size.
-Implementation by: Spencer McNamara
 '''
 
 # Function to convert Binary to Decimal
