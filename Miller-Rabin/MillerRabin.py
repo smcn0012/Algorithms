@@ -24,13 +24,13 @@ def MillerRabin(number, accuracy):
     while counter <= accuracy:
         # Chose a witness get the first modulo
         witness = random.randint(2, number - 2)
-        current_mod_result = (witness ** t) % number
+        current_mod_result = pow(witness, t, number)
         previous_mod_result = 0
 
         # Recursively calculate the next modulo using the repeated square method
         for i in range(1, shift + 1):
             previous_mod_result = current_mod_result
-            current_mod_result = (current_mod_result ** 2) % number
+            current_mod_result = pow(current_mod_result, 2, number)
             if current_mod_result == 1:
                 # Case 2: The previous mod result wasnt congruent to +/-1 mod(number) 
                 if previous_mod_result != 1 and previous_mod_result != number - 1:
