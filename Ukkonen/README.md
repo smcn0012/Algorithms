@@ -1,0 +1,1 @@
+My Ukkonen's algorithm implementations are both failed attempts.  I got close with the V2 and I will give it another go, but it has been a while and I think I will need to start again to know what I am doing.
