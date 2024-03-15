@@ -1,6 +1,7 @@
 class Fibonacci_Node:
     marked: bool
     value: int
+    degree: int
     child: Fibonacci_Node
     right: Fibonacci_Node
     left: Fibonacci_Node
@@ -9,6 +10,7 @@ class Fibonacci_Node:
     def __init__(self, value: int) -> None:
         self.value = value
         self.marked = False
+        self.degree = 0
 
     def setChild(self, child: Fibonacci_Node) -> None:
         self.child = child
@@ -24,6 +26,12 @@ class Fibonacci_Node:
     
     def setMarked(self, marked: bool) -> None:
         self.marked = marked
+
+    def setValue(self, new_value: int) -> None:
+        self.value = new_value
+
+    def setDegree(self, new_degree) -> int:
+        self.degree = new_degree
 
     def getValue(self) -> int:
         return self.value
@@ -42,6 +50,9 @@ class Fibonacci_Node:
     
     def getMarked(self) -> bool:
         return self.marked
+    
+    def getDegree(self) -> int:
+        return self.degree
 
 class Fibonacci_Heap:
         
@@ -60,9 +71,11 @@ class Fibonacci_Heap:
         new_node = Fibonacci_Node(new_number)
         self.h_min.getLeft().setRight(new_node)
         self.h_min.setLeft(new_node)
+        if new_number < self.h_min.getValue():
+            self.h_min = new_node
 
-    def delete(self, target_num:int) -> None:
-        #TODO: Search for target node
+    def delete(self, target_key:int) -> None:
+        target_node = self.findNode(target_key)
         target_node.getChild().getRight().setLeft(target_node.getLeft())
         target_node.getChild().setRight(target_node.getRight())
 
@@ -82,4 +95,41 @@ class Fibonacci_Heap:
         return old_min
 
     def consolidate(self) -> None:
-        pass
+        heap_degrees = []
+        current_node = self.h_min
+        last_node_checked = None
+        skip_to_node = None
+        while current_node is not last_node_checked:
+            if self.h_min.getDegree() >= len(heap_degrees):
+                heap_degrees.extend([None for _ in range(self.h_min.getDegree() - len(heap_degrees) + 1)])
+            
+            current_degree_node = heap_degrees[self.h_min.getDegree()]
+            if current_degree_node is None:
+                heap_degrees[self.h_min.getDegree()] = current_node
+                last_node_checked = current_node
+                if skip_to_node is not None:
+                    current_node = skip_to_node
+                    skip_to_node = None
+                else:
+                    current_node = current_node.getRight()
+            elif current_degree_node.getValue() < current_node.getValue():
+                skip_to_node = current_node.getRight()
+                # Setting the left and right of the current node to point at eachother
+                current_node.getLeft().setRight(current_node.getLeft())
+                current_node.getRight().setLeft(current_node.getRight())
+                # Inserting the current node to the left of the child of the current degree node
+                current_degree_node.getChild().getLeft().setRight(current_node)
+                current_node.setLeft(current_degree_node.getChild().getLeft())
+                current_degree_node.getChild().setLeft(current_node)
+                current_node.setRight(current_degree_node.getChild())
+                current_degree_node.setDegree(current_degree_node.getDegree() + 1)
+                current_node = current_degree_node
+                
+            
+                
+
+    def decreaseKey(self, target_key: int, new_value: int) -> None:
+        target_node = self.findNode(target_key)
+        #case 1: decreasing the node doesn't violate the heap property
+
+    def findNode(self, target_node: int) -> Fibonacci_Node:
