@@ -97,22 +97,22 @@ class Fibonacci_Heap:
     def consolidate(self) -> None:
         heap_degrees = []
         current_node = self.h_min
-        last_node_checked = None
         skip_to_node = None
-        while current_node is not last_node_checked:
+        
+        while current_node not in heap_degrees:
             if self.h_min.getDegree() >= len(heap_degrees):
                 heap_degrees.extend([None for _ in range(self.h_min.getDegree() - len(heap_degrees) + 1)])
             
             current_degree_node = heap_degrees[self.h_min.getDegree()]
             if current_degree_node is None:
                 heap_degrees[self.h_min.getDegree()] = current_node
-                last_node_checked = current_node
                 if skip_to_node is not None:
                     current_node = skip_to_node
                     skip_to_node = None
                 else:
                     current_node = current_node.getRight()
             elif current_degree_node.getValue() < current_node.getValue():
+                # the current degree node has a smaller root node value than the current node
                 skip_to_node = current_node.getRight()
                 # Setting the left and right of the current node to point at eachother
                 current_node.getLeft().setRight(current_node.getLeft())
@@ -124,6 +124,18 @@ class Fibonacci_Heap:
                 current_node.setRight(current_degree_node.getChild())
                 current_degree_node.setDegree(current_degree_node.getDegree() + 1)
                 current_node = current_degree_node
+            else:
+                # the current node has a smaller root node value than the current degree node
+                skip_to_node = current_node.getRight()
+                # Setting the left and right of the current node to point at eachother
+                current_degree_node.getLeft().setRight(current_degree_node.getLeft())
+                current_degree_node.getRight().setLeft(current_degree_node.getRight())
+                # Inserting the current node to the left of the child of the current degree node
+                current_node.getChild().getLeft().setRight(current_degree_node)
+                current_degree_node.setLeft(current_node.getChild().getLeft())
+                current_node.getChild().setLeft(current_degree_node)
+                current_degree_node.setRight(current_node.getChild())
+                current_node.setDegree(current_node.getDegree() + 1)
                 
             
                 
