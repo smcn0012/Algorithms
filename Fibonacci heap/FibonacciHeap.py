@@ -74,11 +74,23 @@ class Fibonacci_Heap:
         if new_number < self.h_min.getValue():
             self.h_min = new_node
 
-    def delete(self, target_key:int) -> None:
-        target_node = self.findNode(target_key)
-        target_node.getChild().getRight().setLeft(target_node.getLeft())
-        target_node.getChild().setRight(target_node.getRight())
-
+    def delete(self, target_node:Fibonacci_Node) -> None:
+        if target_node.getRight() is not target_node:
+            if target_node.getParrent() is not None:
+                if target_node.getParrent().getChild() is target_node:
+                    target_node.getParrent().setChild(target_node.getRight())
+            target_node.getRight().setLeft(target_node.getLeft())
+            target_node.setRight(target_node.getRight())
+        else:
+            if target_node.getParrent() is not None:
+                target_node.getParrent().setChild(None)
+        if target_node.getParrent() is not None:
+            if target_node.getParrent().getMarked():
+                target_node.getParrent().setMarked(False)
+                self.delete(target_node.getParrent())
+            else:
+                target_node.getParrent().setMarked(True)
+        
     def join(self, new_heap: Fibonacci_Heap) -> None:
         new_heap.getHMin().getLeft().setRight(self.h_min)
         temp = self.h_min.getLeft()
@@ -98,7 +110,7 @@ class Fibonacci_Heap:
         heap_degrees = []
         current_node = self.h_min
         skip_to_node = None
-        
+
         while current_node not in heap_degrees:
             if self.h_min.getDegree() >= len(heap_degrees):
                 heap_degrees.extend([None for _ in range(self.h_min.getDegree() - len(heap_degrees) + 1)])
@@ -140,8 +152,11 @@ class Fibonacci_Heap:
             
                 
 
-    def decreaseKey(self, target_key: int, new_value: int) -> None:
-        target_node = self.findNode(target_key)
-        #case 1: decreasing the node doesn't violate the heap property
-
-    def findNode(self, target_node: int) -> Fibonacci_Node:
+    def decreaseKey(self, target_node: Fibonacci_Node, new_value: int) -> None:
+        if target_node.getParrent().getValue() > new_value:
+            #case 1: decreasing the node doesn't violate the heap property
+            target_node.setValue(new_value)
+        elif not target_node.getParrent().getMarked():
+            #case 2a: decreasing the node violates the heap property and the parent isn't marked
+            target_node.getParrent().setMarked(True)
+            self.delete(target_node)
